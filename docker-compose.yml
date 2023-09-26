@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  webserver:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - ./backend:/var/www/html/backend
+    ports:
+      - "9000:80"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: store
+    ports:
+      - "5440:5432"
+
+      
