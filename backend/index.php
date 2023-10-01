@@ -13,6 +13,6 @@ Enviroment::loadEnv();
 $db = new Connection();
 $router = new Router;
 
-require_once __DIR__.'/routes/api.php';
+require_once __DIR__.'/src/routes/api.php';
 
 $router->init();
