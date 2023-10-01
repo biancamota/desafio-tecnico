@@ -10,4 +10,4 @@ RUN apt-get update \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Comando para executar o servidor web PHP embutido
-CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/www/html/backend"]
+CMD ["php", "-S", "0.0.0.0:9090", "-t", "/var/www/html/backend"]
