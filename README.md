@@ -162,48 +162,6 @@ Make sure you have the following require installed on your machine:
 | :---------- | :--------- | :---------------------------------- |
 | id | string | Deletes a sale with the provided ID. |  
 
-#### Taxes
-
-```http
-  GET /taxes
-```
-
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| none | none | return all taxes |
-
-```http
-  GET /taxes/{id}
-```
-
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| id | string | return a specific taxe with the given ID |                      |
-
-```http
-  POST /taxes
-```
-
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| id | string | Creates a new taxe. |   
-
-```http
-  PUT /taxes/{id}
-```
-
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| id | string | Updates an existing taxe with the provided ID. |  
-
-```http
-  DELETE /taxes/{id}
-```
-
-| Parameter   | Type       | Description                           |
-| :---------- | :--------- | :---------------------------------- |
-| id | string | Deletes a taxe with the provided ID. |  
-
 #### Users
 
 ```http
