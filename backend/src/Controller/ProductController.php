@@ -3,111 +3,74 @@
 namespace Bm\Store\Controller;
 
 use Bm\Store\Entity\Product;
-use Bm\Store\Repository\CategoryRepository;
-use Bm\Store\Repository\ProductRepository;
+use Bm\Store\Service\ProductService;
 use Bm\Store\Util\JsonResponse;
 
 class ProductController
 {
-    protected $productRepository;
-    protected $categoryRepository;
+    protected $productService;
 
     public function __construct()
     {
-        $this->productRepository = new ProductRepository;
-        $this->categoryRepository = new CategoryRepository;
+        $this->productService = new ProductService;
     }
 
     public function getAll()
     {
-        $data = $this->productRepository->getAll();
-        $products = [];
-        foreach ($data as $product) {
-            $products[] = $product->toJsonArray();
-        }
+        $products = $this->productService->getAll();
+
         return JsonResponse::send($products);
     }
 
     public function getById($args)
     {
-        $product = $this->productRepository->getById($args['products']);
+        $product = $this->productService->getById($args['products']);
+
         if (!$product) {
             return JsonResponse::send('Product not found', 404);
         }
-        return JsonResponse::send($product->toJsonArray());
+
+        return JsonResponse::send($product);
     }
 
     public function store($request)
     {
-        $validationErrors = $this->validate($request);
+        $response = $this->productService->store($request);
 
-        if (!empty($validationErrors)) {
-            return JsonResponse::send(['errors' => $validationErrors], 400);
+        if (!empty($response)) {
+            return JsonResponse::send($response, 400);
         }
-
-        $product = new Product;
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->category_id = $request->categoryId;
-
-        $this->productRepository->create($product);
 
         return JsonResponse::send('Product saved successfully', 201);
     }
 
     public function update($request, $args)
     {
-        $product = $this->productRepository->getById($args['products']);
+        $product = $this->productService->getById($args['products']);
 
         if (!$product) {
             return JsonResponse::send('Product not found', 404);
         }
 
-        $validationErrors = $this->validate($request);
+        $response =  $this->productService->update($args['products'], $product);
 
-        if (!empty($validationErrors)) {
-            return JsonResponse::send(['errors' => $validationErrors], 400);
+        if (!empty($response)) {
+            return JsonResponse::send($response, 400);
         }
-
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->category_id = $request->categoryId;
-
-        $this->productRepository->update($args['products'], $product);
 
         return JsonResponse::send('Product updated successfully');
     }
 
     public function delete($args)
     {
-        $product = $this->productRepository->getById($args['products']);
+        $product = $this->productService->getById($args['products']);
 
         if (!$product) {
             return JsonResponse::send('Product not found', 404);
         }
 
-        $this->productRepository->delete($args['products']);
+        $this->productService->delete($args['products']);
 
         return JsonResponse::send('Product deleted successfully');
-    }
-
-    private function validate($product): array
-    {
-        $errors = [];
-
-        if (empty($product->name) || empty($product->price) || empty($product->category_id)) {
-            $errors[] = 'All fields (name, price, category) are required';
-        }
-
-        if (!is_numeric($product->price) || $product->price < 0) {
-            $errors[] = 'Price must be a valid non-negative decimal number';
-        }
-
-        $existingCategory = $this->categoryRepository->getById($product->category_id);
-        if (!$existingCategory) {
-            $errors[] = 'Category not found';
-        }
-
-        return $errors;
     }
 }
