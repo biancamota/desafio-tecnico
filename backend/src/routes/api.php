@@ -33,16 +33,7 @@ try {
     $router->post('/sales', 'SaleController:store');
     $router->put('/sales/(:id)', 'SaleController:update');
     $router->delete('/sales/(:id)', 'SaleController:delete');
-
-    /**
-     * Taxes Routes
-     */
-    $router->get('/taxes', 'TaxeController:getAll');
-    $router->get('/taxes/(:id)', 'TaxeController:getById');
-    $router->post('/taxes', 'TaxeController:store');
-    $router->put('/taxes/(:id)', 'TaxeController:update');
-    $router->delete('/taxes/(:id)', 'TaxeController:delete');
-
+    
     /**
      * Users Routes
      */
