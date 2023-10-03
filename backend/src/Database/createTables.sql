@@ -9,7 +9,8 @@ CREATE TABLE users (
 -- Product Types Table
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    taxe numeric(5,2) NOT NULL DEFAULT 0
 );
 
 -- Products Table
@@ -18,13 +19,6 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     category_id INT REFERENCES categories(id)
-);
-
--- Taxes Table
-CREATE TABLE taxes (
-    id SERIAL PRIMARY KEY,
-    category_id INT REFERENCES categories(id),
-    percentage DECIMAL(5, 2) NOT NULL
 );
 
 -- Sales Table
