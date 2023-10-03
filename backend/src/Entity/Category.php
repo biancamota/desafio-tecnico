@@ -8,7 +8,8 @@ class Category extends Entity
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
+            'taxe' => $this->taxe
         ];
     }
 }
