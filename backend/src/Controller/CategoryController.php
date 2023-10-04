@@ -44,12 +44,6 @@ class CategoryController
 
     public function update($request, $args)
     {
-        $category = $this->categoryService->getById($args['categories']);
-
-        if (!$category) {
-            return JsonResponse::send('Category not found', 404);
-        }
-
         $response = $this->categoryService->update($request, $args['categories']);
 
         if (!empty($response)) {

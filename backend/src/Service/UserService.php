@@ -49,16 +49,23 @@ class UserService
         return [];
     }
 
-    public function update(User $user, $args)
+    public function update($request, $args)
     {
+        $user = $this->userRepository->getById($args['users']);
+
+        if (!$user) {
+            return ['User not found'];
+        }
+
         $validationErrors = $this->validate($user);
 
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
 
-        $user->name = $user->name;
-        $user->email = $user->email;
+        $user->name = $request->name;
+        $user->email = $request->email;
+
         if ($user->password) {
             $user->setPasswordHash($user->password);
         }

@@ -51,13 +51,18 @@ class SaleService
 
     public function update($request, $args)
     {
+        $sale = $this->saleRepository->getById($args['sales']);
+
+        if (!$sale) {
+            return ['Sale not found'];
+        }
+
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
 
-        $sale = new Sale;
         $sale->date = $request->date;
         $sale->total_purchase = $request->total_purchase;
         $sale->total_taxes = $request->total_taxes;

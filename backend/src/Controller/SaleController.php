@@ -42,13 +42,11 @@ class SaleController
 
     public function update($request, $args)
     {
-        $sale = $this->saleService->getById($args['sales']);
+        $response = $this->saleService->update($request, $args['sales']);
 
-        if (!$sale) {
-            return JsonResponse::send('Sale not found', 404);
+        if (!empty($response)) {
+            return JsonResponse::send($response, 400);
         }
-
-        $this->saleService->update($args['sales'], $sale);
 
         return JsonResponse::send('Sale updated successfully');
     }

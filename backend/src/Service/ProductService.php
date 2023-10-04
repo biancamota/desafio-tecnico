@@ -54,13 +54,18 @@ class ProductService
 
     public function update($request, $args)
     {
+        $product = $this->productRepository->getById($args['products']);
+
+        if (!$product) {
+            return ['Product not found'];
+        }
+
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
-        
-        $product = new Product;
+
         $product->name = $request->name;
         $product->price = $request->price;
         $product->category_id = $request->categoryId;

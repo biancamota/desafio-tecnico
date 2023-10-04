@@ -52,20 +52,24 @@ class CategoryService
 
     public function update($request, $args)
     {
-        $response = [];
+        $category = $this->categoryRepository->getById($args['categories']);
+
+        if (!$category) {
+            return ['Category not found'];
+        }
+        
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
             $response['errors'] = $validationErrors;
         }
 
-        $category = new Category;
         $category->name = $request->name;
         $category->taxe = $request->taxe;
 
         $this->categoryRepository->update($args['categories'], $category);
 
-        return $response;
+        return [];
     }
 
     public function delete($args)

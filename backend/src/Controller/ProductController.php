@@ -46,13 +46,7 @@ class ProductController
 
     public function update($request, $args)
     {
-        $product = $this->productService->getById($args['products']);
-
-        if (!$product) {
-            return JsonResponse::send('Product not found', 404);
-        }
-
-        $response =  $this->productService->update($args['products'], $product);
+        $response =  $this->productService->update($request, $args['products']);
 
         if (!empty($response)) {
             return JsonResponse::send($response, 400);

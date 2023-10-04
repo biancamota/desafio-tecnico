@@ -2,7 +2,6 @@
 
 namespace Bm\Store\Controller;
 
-use Bm\Store\Entity\User;
 use Bm\Store\Service\UserService;
 use Bm\Store\Util\JsonResponse;
 
@@ -44,13 +43,11 @@ class UserController
 
     public function update($request, $args)
     {
-        $user = $this->userService->getById($args['users']);
+        $response = $this->userService->update($request, $args['users']);
 
-        if (!$user) {
-            return JsonResponse::send('User not found', 404);
+        if (!empty($response)) {
+            return JsonResponse::send($response, 400);
         }
-
-        $this->userService->update($args['users'], $user);
 
         return JsonResponse::send('User updated successfully');
     }
