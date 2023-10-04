@@ -87,6 +87,33 @@ abstract class Model
         }
     }
 
+    public function getWhereIn(string $where, array $values, string $fields = '*')
+    {
+        try {
+            Transaction::open();
+
+            $conn = Transaction::getConnection();
+            $placeholders = implode(',', array_fill(0, count($values), '?'));
+            $query = $conn->prepare("SELECT {$fields} FROM {$this->table} WHERE {$where} IN ({$placeholders})");
+
+            foreach ($values as $key => $value) {
+                $query->bindValue($key + 1, $value);
+            }
+
+            $query->execute();
+
+            $entity = $this->getEntity();
+            $result = $query->fetchAll(PDO::FETCH_CLASS, $entity);
+
+            Transaction::close();
+
+            return $result;
+        } catch (PDOException $e) {
+            JsonResponse::send($e->getMessage(), 500);
+            Transaction::rollback();
+        }
+    }
+
 
     public function create(Entity $entity)
     {
