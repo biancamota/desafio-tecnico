@@ -33,6 +33,7 @@ class UserService
 
     public function store($request)
     {
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
@@ -56,7 +57,7 @@ class UserService
         if (!$user) {
             return ['User not found'];
         }
-
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($user);
 
         if (!empty($validationErrors)) {
@@ -102,4 +103,9 @@ class UserService
         return $errors;
     }
 
+    private function parsedDataRequest(&$request)
+    {
+        $request->name = trim($request->name);
+        $request->email = trim($request->email);
+    }
 }

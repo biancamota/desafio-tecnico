@@ -34,7 +34,7 @@ class CategoryService
     public function store($request)
     {
         $response = [];
-
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
@@ -57,7 +57,8 @@ class CategoryService
         if (!$category) {
             return ['Category not found'];
         }
-        
+
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
@@ -93,5 +94,10 @@ class CategoryService
         }
 
         return $errors;
+    }
+
+    private function parsedDataRequest(&$request)
+    {
+        $request->taxe = $request->taxe ? (float) $request->taxe : 0;
     }
 }

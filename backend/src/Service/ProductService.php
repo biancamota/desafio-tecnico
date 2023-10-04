@@ -36,6 +36,7 @@ class ProductService
 
     public function store($request)
     {
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
@@ -60,12 +61,13 @@ class ProductService
             return ['Product not found'];
         }
 
+        $this->parsedDataRequest($request);
         $validationErrors = $this->validate($request);
 
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
-
+        
         $product->name = $request->name;
         $product->price = $request->price;
         $product->category_id = $request->categoryId;
@@ -100,5 +102,11 @@ class ProductService
         }
 
         return $errors;
+    }
+
+    private function parsedDataRequest(&$request) 
+    {
+        $request->price = (float) $request->price;
+        $request->category_id = (int) $request->category_id;
     }
 }
