@@ -26,7 +26,7 @@ class UserService
 
     public function getById($args)
     {
-        $user = $this->userRepository->getById($args['users']);
+        $user = $this->userRepository->getById($args);
 
         return $user ? $user->toJsonArray() : null;
     }
@@ -39,7 +39,7 @@ class UserService
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
-        
+
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
@@ -52,7 +52,7 @@ class UserService
 
     public function update($request, $args)
     {
-        $user = $this->userRepository->getById($args['users']);
+        $user = $this->userRepository->getById($args);
 
         if (!$user) {
             return ['User not found'];
@@ -71,23 +71,21 @@ class UserService
             $user->setPasswordHash($user->password);
         }
 
-        $this->userRepository->update($args['users'], $user);
+        $this->userRepository->update($args, $user);
 
         return [];
     }
 
     public function delete($args)
     {
-        $this->userRepository->delete($args['users']);
+        $this->userRepository->delete($args);
 
         return [];
     }
 
     private function validate($user): array
     {
-        $errors = [];
-
-        if (empty($user->name) || empty($user->email) || empty($user->password)) {
+        if (empty($user->name) || empty($user->email) || ( !$user->id && empty($user->password))) {
             $errors[] = 'All fields are required';
         }
 
@@ -95,9 +93,11 @@ class UserService
             $errors[] = 'The email address is not valid';
         }
 
-        $exists = $this->userRepository->getWhere('email', $user->email);
-        if ($exists) {
-            $errors[] = 'This email address is already in use by another user';
+        if (!$user->id) {
+            $exists = $this->userRepository->getWhere('email', $user->email);
+            if ($exists) {
+                $errors[] = 'This email address is already in use by another user';
+            }
         }
 
         return $errors;
