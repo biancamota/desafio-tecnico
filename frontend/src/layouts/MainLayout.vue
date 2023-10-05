@@ -54,8 +54,7 @@ const linksList = [
   {
     title: 'PDV',
     caption: '',
-    icon: 'home',
-    routeName: { name: 'home' }
+    routeName: 'home'
   },
   {
     title: 'Products',
@@ -65,22 +64,17 @@ const linksList = [
   {
     title: 'Categories',
     caption: '',
-    routeName: { name: 'categories' }
+    routeName: 'categoriesList'
   },
   {
     title: 'Sales',
     caption: '',
-    routeName: { name: 'sales' }
-  },
-  {
-    title: 'Taxes',
-    caption: '',
-    routeName: { name: 'taxes' }
+    routeName: 'salesList'
   },
   {
     title: 'Users',
     caption: '',
-    routeName: { name: 'users' }
+    routeName: 'usersList'
   }
 ]
 
