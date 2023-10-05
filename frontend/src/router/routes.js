@@ -15,14 +15,12 @@ const routes = [
     children: [
       { path: 'pdv', name: 'home', component: () => import('pages/IndexPage.vue') },
       { path: 'products', name: 'productsList', component: () => import('pages/product/List.vue') },
-      { path: 'products/form', name: 'productsForm', component: () => import('pages/product/Form.vue') },
+      { path: 'products/form/:id?', name: 'productsForm', component: () => import('pages/product/Form.vue') },
       { path: 'categories', name: 'categoriesList', component: () => import('pages/category/List.vue') },
-      { path: 'categories/form', name: 'categoriesForm', component: () => import('pages/category/Form.vue') },
+      { path: 'categories/form/:id?', name: 'categoriesForm', component: () => import('pages/category/Form.vue') },
       { path: 'sales', name: 'salesList', component: () => import('pages/sale/List.vue') },
-      { path: 'taxes', name: 'taxesList', component: () => import('pages/taxe/List.vue') },
-      { path: 'taxes/form', name: 'taxesForm', component: () => import('pages/taxe/Form.vue') },
       { path: 'users', name: 'usersList', component: () => import('pages/user/List.vue') },
-      { path: 'users/form', name: 'usersForm', component: () => import('pages/user/Form.vue') },
+      { path: 'users/form/:id?', name: 'usersForm', component: () => import('pages/user/Form.vue') },
     ],
     // meta: {
     //   requiresAuth: true
