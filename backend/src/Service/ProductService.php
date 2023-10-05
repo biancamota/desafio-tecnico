@@ -46,7 +46,7 @@ class ProductService
         $product = new Product;
         $product->name = $request->name;
         $product->price = $request->price;
-        $product->category_id = $request->categoryId;
+        $product->category_id = $request->category_id;
 
         $this->productRepository->create($product);
 
@@ -70,7 +70,7 @@ class ProductService
         
         $product->name = $request->name;
         $product->price = $request->price;
-        $product->category_id = $request->categoryId;
+        $product->category_id = $request->category_id;
 
         $this->productRepository->update($args['products'], $product);
 

@@ -10,7 +10,7 @@ class Product extends Entity
             'id' => $this->id,
             'name' => $this->name,
             'price' => $this->price,
-            'categoryId' => $this->category_id,
+            'category_id' => $this->category_id,
         ];
     }
 }
