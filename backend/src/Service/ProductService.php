@@ -29,7 +29,7 @@ class ProductService
 
     public function getById($args)
     {
-        $product = $this->productRepository->getById($args['products']);
+        $product = $this->productRepository->getById($args);
 
         return $product ? $product->toJsonArray() : null;
     }
@@ -55,7 +55,7 @@ class ProductService
 
     public function update($request, $args)
     {
-        $product = $this->productRepository->getById($args['products']);
+        $product = $this->productRepository->getById($args);
 
         if (!$product) {
             return ['Product not found'];
@@ -67,19 +67,19 @@ class ProductService
         if (!empty($validationErrors)) {
             return ['errors' => $validationErrors];
         }
-        
+
         $product->name = $request->name;
         $product->price = $request->price;
         $product->category_id = $request->category_id;
 
-        $this->productRepository->update($args['products'], $product);
+        $this->productRepository->update($args, $product);
 
         return [];
     }
 
     public function delete($args)
     {
-        $this->productRepository->delete($args['products']);
+        $this->productRepository->delete($args);
 
         return [];
     }
@@ -104,7 +104,7 @@ class ProductService
         return $errors;
     }
 
-    private function parsedDataRequest(&$request) 
+    private function parsedDataRequest(&$request)
     {
         $request->price = (float) $request->price;
         $request->category_id = (int) $request->category_id;
