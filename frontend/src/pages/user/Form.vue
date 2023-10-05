@@ -3,33 +3,31 @@
     <div class="row justify-center">
       <div class="col-12 text-center">
         <p class="text-h6">
-          Form Product
+          Form User
         </p>
       </div>
       <q-form class="col-md-7 col-xs-12 col-sm-12 q-gutter-y-md" @submit.prevent="handleSubmit">
 
-       <q-input
+        <q-input
           label="Name"
           v-model="form.name"
+          lazy-rules
           :rules="[val => (val && val.length > 0) || 'Name is required']"
         />
 
         <q-input
-          label="Price"
-          v-model="form.price"
-          :rules="[val => !!val || 'Price is required']"
-          prefix="$"
+          label="Email"
+          v-model="form.email"
+          lazy-rules
+          :rules="[val => (val && val.length > 0) || 'Email is required']"
+          type="email"
         />
 
-        <q-select
-          v-model="form.category_id"
-          :options="optionsCategory"
-          label="Category"
-          option-value="id"
-          option-label="name"
-          map-options
-          emit-value
-          :rules="[val => !!val || 'Category is required']"
+        <q-input
+          label="Password"
+          v-model="form.password"
+          lazy-rules
+          :rules=" isUpdate ? [] : [val => (val && val.length >= 6) || 'Password is required and 6 characters']"
         />
 
         <q-btn
@@ -46,7 +44,7 @@
           class="full-width"
           rounded
           flat
-          :to="{ name: 'productsList' }"
+          :to="{ name: 'usersList' }"
         />
 
       </q-form>
@@ -58,38 +56,30 @@
 import { defineComponent, ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import useNotify from 'src/composables/UseNotify'
-import productsService from 'src/services/products'
-import categoriesService from 'src/services/category'
+import usersService from 'src/services/user'
 
 export default defineComponent({
-  name: 'PageProductForm',
+  name: 'PageUserForm',
   setup () {
     const router = useRouter()
     const route = useRoute()
-    const service = productsService()
-    const serviceCategory = categoriesService()
+    const service = usersService()
     const { notifyError, notifySuccess } = useNotify()
 
     const isUpdate = computed(() => route.params.id)
 
-    let product = {}
-    const optionsCategory = ref([])
+    let user = {}
     const form = ref({
       name: '',
-      price: 0,
-      category_id: ''
+      email: '',
+      password: ''
     })
 
     onMounted(() => {
-      handleListCategories()
       if (isUpdate.value) {
-        handleGetProduct(isUpdate.value)
+        handleGetUser(isUpdate.value)
       }
     })
-
-    const handleListCategories = async () => {
-      optionsCategory.value = await serviceCategory.getAll()
-    }
 
     const handleSubmit = async () => {
       try {
@@ -100,16 +90,16 @@ export default defineComponent({
           await service.save(form.value)
           notifySuccess('Saved Successfully')
         }
-        router.push({ name: 'productsList' })
+        router.push({ name: 'usersList' })
       } catch (error) {
         notifyError(error.message)
       }
     }
 
-    const handleGetProduct = async (id) => {
+    const handleGetUser = async (id) => {
       try {
-        product = await service.getById(id)
-        form.value = product
+        user = await service.getById(id)
+        form.value = user
       } catch (error) {
         notifyError(error.message)
       }
@@ -118,8 +108,7 @@ export default defineComponent({
     return {
       handleSubmit,
       form,
-      isUpdate,
-      optionsCategory
+      isUpdate
     }
   }
 })
