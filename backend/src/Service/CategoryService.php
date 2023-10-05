@@ -26,7 +26,7 @@ class CategoryService
 
     public function getById($args)
     {
-        $category = $this->categoryRepository->getById($args['categories']);
+        $category = $this->categoryRepository->getById($args);
 
         return $category ? $category->toJsonArray() : null;
     }
@@ -52,7 +52,7 @@ class CategoryService
 
     public function update($request, $args)
     {
-        $category = $this->categoryRepository->getById($args['categories']);
+        $category = $this->categoryRepository->getById($args);
 
         if (!$category) {
             return ['Category not found'];
@@ -68,14 +68,14 @@ class CategoryService
         $category->name = $request->name;
         $category->taxe = $request->taxe;
 
-        $this->categoryRepository->update($args['categories'], $category);
+        $this->categoryRepository->update($args, $category);
 
         return [];
     }
 
     public function delete($args)
     {
-        $this->categoryRepository->delete($args['categories']);
+        $this->categoryRepository->delete($args);
 
         return [];
     }
