@@ -2,22 +2,22 @@
   <q-page padding>
     <div class="row">
       <q-table
-        :rows="products"
-        :columns="columnsProduct"
+        :rows="categories"
+        :columns="columnsCategory"
         row-key="id"
         class="col-12"
         :loading="loading"
       >
         <template v-slot:top>
           <span class="text-h6">
-            Products
+            Categories
           </span>
           <q-space />
           <q-btn
             label="Add New"
             color="primary"
             dense
-            :to="{ name: 'productsForm' }"
+            :to="{ name: 'categoriesForm' }"
           />
         </template>
         <template v-slot:body-cell-actions="props">
@@ -42,26 +42,26 @@
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
 import useNotify from 'src/composables/UseNotify'
-import productsService from 'src/services/products'
+import categoriesService from 'src/services/category'
 import { useRouter } from 'vue-router'
 import { useQuasar} from 'quasar'
-import { columnsProduct } from './table'
+import { columnsCategory } from './table'
 
 export default defineComponent({
-  name: 'PageProductList',
+  name: 'PageCategoryList',
   setup () {
-    const products = ref([])
+    const categories = ref([])
     const loading = ref(true)
     const router = useRouter()
     const $q = useQuasar()
 
-    const service = productsService()
+    const service = categoriesService()
     const { notifyError, notifySuccess } = useNotify()
 
     const handleList = async () => {
       try {
         loading.value = true
-        products.value = await service.getAll()
+        categories.value = await service.getAll()
         loading.value = false
       } catch (error) {
         notifyError(error.message)
@@ -69,7 +69,7 @@ export default defineComponent({
     }
 
     const handleEdit = (item) => {
-      router.push({ name: 'productsForm', params: { id: item.id } })
+      router.push({ name: 'categoriesForm', params: { id: item.id } })
     }
 
     const handleRemoveItem = async (item) => {
@@ -80,7 +80,7 @@ export default defineComponent({
           cancel: true,
           persistent: true
         }).onOk(async () => {
-          // await service.remove(item.id)
+          await service.remove(item.id)
           notifySuccess('successfully deleted')
           handleList()
         })
@@ -94,8 +94,8 @@ export default defineComponent({
     })
 
     return {
-      columnsProduct,
-      products,
+      columnsCategory,
+      categories,
       loading,
       handleEdit,
       handleRemoveItem,

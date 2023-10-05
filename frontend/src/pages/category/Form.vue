@@ -3,7 +3,7 @@
     <div class="row justify-center">
       <div class="col-12 text-center">
         <p class="text-h6">
-          Form Product
+          Form Category
         </p>
       </div>
       <q-form class="col-md-7 col-xs-12 col-sm-12 q-gutter-y-md" @submit.prevent="handleSubmit">
@@ -15,21 +15,10 @@
         />
 
         <q-input
-          label="Price"
-          v-model="form.price"
-          :rules="[val => !!val || 'Price is required']"
-          prefix="$"
-        />
-
-        <q-select
-          v-model="form.category_id"
-          :options="optionsCategory"
-          label="Category"
-          option-value="id"
-          option-label="name"
-          map-options
-          emit-value
-          :rules="[val => !!val || 'Category is required']"
+          label="Taxe"
+          v-model="form.taxe"
+          :rules="[val => !!val || 'Taxe is required']"
+          prefix="%"
         />
 
         <q-btn
@@ -46,7 +35,7 @@
           class="full-width"
           rounded
           flat
-          :to="{ name: 'productsList' }"
+          :to="{ name: 'categoriesList' }"
         />
 
       </q-form>
@@ -58,7 +47,6 @@
 import { defineComponent, ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import useNotify from 'src/composables/UseNotify'
-import productsService from 'src/services/products'
 import categoriesService from 'src/services/category'
 
 export default defineComponent({
@@ -66,30 +54,22 @@ export default defineComponent({
   setup () {
     const router = useRouter()
     const route = useRoute()
-    const service = productsService()
-    const serviceCategory = categoriesService()
+    const service = categoriesService()
     const { notifyError, notifySuccess } = useNotify()
 
     const isUpdate = computed(() => route.params.id)
 
-    let product = {}
-    const optionsCategory = ref([])
+    let category = {}
     const form = ref({
       name: '',
-      price: 0,
-      category_id: ''
+      taxe: 0,
     })
 
     onMounted(() => {
-      handleListCategories()
       if (isUpdate.value) {
-        handleGetProduct(isUpdate.value)
+        handleGetCategory(isUpdate.value)
       }
     })
-
-    const handleListCategories = async () => {
-      optionsCategory.value = await serviceCategory.getAll()
-    }
 
     const handleSubmit = async () => {
       try {
@@ -100,16 +80,16 @@ export default defineComponent({
           await service.save(form.value)
           notifySuccess('Saved Successfully')
         }
-        router.push({ name: 'productsList' })
+        router.push({ name: 'categoriesList' })
       } catch (error) {
         notifyError(error.message)
       }
     }
 
-    const handleGetProduct = async (id) => {
+    const handleGetCategory = async (id) => {
       try {
-        product = await service.getById(id)
-        form.value = product
+        category = await service.getById(id)
+        form.value = category
       } catch (error) {
         notifyError(error.message)
       }
@@ -118,8 +98,7 @@ export default defineComponent({
     return {
       handleSubmit,
       form,
-      isUpdate,
-      optionsCategory
+      isUpdate
     }
   }
 })
