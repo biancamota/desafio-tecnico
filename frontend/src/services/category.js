@@ -1,6 +1,6 @@
 import useApi from 'src/composables/UseApi'
 
-export default function productsService () {
+export default function categoriesService () {
   const { getAll, save, update, remove } = useApi('categories')
 
   return {
