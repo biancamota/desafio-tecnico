@@ -2,24 +2,22 @@
   <q-page padding>
     <div class="row">
       <q-table
-        :rows="categories"
-        :columns="columnsCategory"
+        :rows="products"
+        :columns="columnsProduct"
         row-key="id"
         class="col-12"
         :loading="loading"
       >
         <template v-slot:top>
           <span class="text-h6">
-            Category
+            Products
           </span>
           <q-space />
           <q-btn
-            v-if="$q.platform.is.desktop"
             label="Add New"
             color="primary"
-            icon="mdi-plus"
             dense
-            :to="{ name: 'form-category' }"
+            :to="{ name: 'productsForm' }"
           />
         </template>
         <template v-slot:body-cell-actions="props">
@@ -29,7 +27,7 @@
                 Edit
               </q-tooltip>
             </q-btn>
-            <q-btn icon="mdi-delete-outline" color="negative" dense size="sm" @click="handleRemoveCategory(props.row)">
+            <q-btn icon="mdi-delete-outline" color="negative" dense size="sm" @click="handleRemoveItem(props.row)">
               <q-tooltip>
                 Delete
               </q-tooltip>
@@ -38,68 +36,53 @@
         </template>
       </q-table>
     </div>
-    <q-page-sticky
-      position="bottom-right"
-      :offset="[18, 18]"
-    >
-      <q-btn
-        v-if="$q.platform.is.mobile"
-        fab
-        icon="mdi-plus"
-        color="primary"
-        :to="{ name: 'form-category' }"
-      />
-    </q-page-sticky>
   </q-page>
 </template>
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
-import useApi from 'src/composables/UseApi'
 import useNotify from 'src/composables/UseNotify'
-import useAuthUser from 'src/composables/UseAuthUser'
+import productsService from 'src/services/products'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import { columnsCategory } from './table'
+import { useQuasar} from 'quasar'
+import { columnsProduct } from './table'
 
 export default defineComponent({
-  name: 'PageCategoryList',
+  name: 'PageProductList',
   setup () {
-    const categories = ref([])
+    const products = ref([])
     const loading = ref(true)
     const router = useRouter()
     const $q = useQuasar()
-    const { user } = useAuthUser()
-    const table = 'category'
 
-    const { listPublic, remove } = useApi()
+    const service = productsService()
     const { notifyError, notifySuccess } = useNotify()
 
-    const handleListCategories = async () => {
+    const handleList = async () => {
       try {
         loading.value = true
-        categories.value = await listPublic(table, user.value.id)
+        products.value = await service.getAll()
         loading.value = false
       } catch (error) {
         notifyError(error.message)
       }
     }
 
-    const handleEdit = (category) => {
-      router.push({ name: 'form-category', params: { id: category.id } })
+    const handleEdit = (item) => {
+      router.push({ name: 'productsForm', params: { id: item.id } })
     }
 
-    const handleRemoveCategory = async (category) => {
+    const handleRemoveItem = async (item) => {
       try {
         $q.dialog({
           title: 'Confirm',
-          message: `Do you really delete ${category.name} ?`,
+          message: `Do you really delete ${item.name} ?`,
           cancel: true,
           persistent: true
         }).onOk(async () => {
-          await remove(table, category.id)
+          // await service.remove(item.id)
           notifySuccess('successfully deleted')
-          handleListCategories()
+          handleList()
         })
       } catch (error) {
         notifyError(error.message)
@@ -107,15 +90,15 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      handleListCategories()
+      handleList()
     })
 
     return {
-      columnsCategory,
-      categories,
+      columnsProduct,
+      products,
       loading,
       handleEdit,
-      handleRemoveCategory
+      handleRemoveItem,
     }
   }
 })

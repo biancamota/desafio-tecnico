@@ -8,37 +8,17 @@
       </div>
       <q-form class="col-md-7 col-xs-12 col-sm-12 q-gutter-y-md" @submit.prevent="handleSubmit">
 
-        <q-input
-          label="Image"
-          stack-label
-          v-model="img"
-          type="file"
-          accept="image/*"
-        />
-
        <q-input
           label="Name"
           v-model="form.name"
           :rules="[val => (val && val.length > 0) || 'Name is required']"
         />
 
-        <q-editor
-          v-model="form.description"
-          min-height="5rem"
-        />
-
-        <q-input
-          label="Amount"
-          v-model="form.amount"
-          :rules="[val => !!val || 'Amount is required']"
-          type="number"
-        />
-
         <q-input
           label="Price"
           v-model="form.price"
           :rules="[val => !!val || 'Price is required']"
-          prefix="R$"
+          prefix="$"
         />
 
         <q-select
@@ -66,7 +46,7 @@
           class="full-width"
           rounded
           flat
-          :to="{ name: 'product'}"
+          :to="{ name: 'productsList' }"
         />
 
       </q-form>
@@ -77,19 +57,18 @@
 <script>
 import { defineComponent, ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import useApi from 'src/composables/UseApi'
 import useNotify from 'src/composables/UseNotify'
-import useAuthUser from 'src/composables/UseAuthUser'
+import productsService from 'src/services/products'
+import categoriesService from 'src/services/category'
 
 export default defineComponent({
-  name: 'PageFormCategory',
+  name: 'PageProductForm',
   setup () {
-    const table = 'product'
     const router = useRouter()
     const route = useRoute()
-    const { post, getById, update, listPublic, uploadImg } = useApi()
+    const service = productsService()
+    const serviceCategory = categoriesService()
     const { notifyError, notifySuccess } = useNotify()
-    const { user } = useAuthUser()
 
     const isUpdate = computed(() => route.params.id)
 
@@ -97,13 +76,9 @@ export default defineComponent({
     const optionsCategory = ref([])
     const form = ref({
       name: '',
-      description: '',
-      amount: 0,
       price: 0,
-      category_id: '',
-      img_url: ''
+      category_id: ''
     })
-    const img = ref([])
 
     onMounted(() => {
       handleListCategories()
@@ -113,23 +88,19 @@ export default defineComponent({
     })
 
     const handleListCategories = async () => {
-      optionsCategory.value = await listPublic('category', user.value.id)
+      optionsCategory.value = await serviceCategory.getAll()
     }
 
     const handleSubmit = async () => {
       try {
-        if (img.value.length > 0) {
-          const imgUrl = await uploadImg(img.value[0], 'products')
-          form.value.img_url = imgUrl
-        }
         if (isUpdate.value) {
-          await update(table, form.value)
+          await service.update(form.value)
           notifySuccess('Update Successfully')
         } else {
-          await post(table, form.value)
+          await service.save(form.value)
           notifySuccess('Saved Successfully')
         }
-        router.push({ name: 'product' })
+        router.push({ name: 'productsList' })
       } catch (error) {
         notifyError(error.message)
       }
@@ -137,7 +108,7 @@ export default defineComponent({
 
     const handleGetProduct = async (id) => {
       try {
-        product = await getById(table, id)
+        product = await service.getById(id)
         form.value = product
       } catch (error) {
         notifyError(error.message)
@@ -148,8 +119,7 @@ export default defineComponent({
       handleSubmit,
       form,
       isUpdate,
-      optionsCategory,
-      img
+      optionsCategory
     }
   }
 })

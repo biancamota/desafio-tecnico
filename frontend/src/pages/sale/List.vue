@@ -10,45 +10,15 @@
       >
         <template v-slot:top>
           <span class="text-h6">
-            Product
+            Products
           </span>
-          <q-btn
-            label="My Store"
-            dense
-            size="sm"
-            outline
-            class="q-ml-sm"
-            icon="mdi-store"
-            color="primary"
-            @click="handleGoToStore"
-          />
-          <q-btn
-            label="Copy Link"
-            dense
-            size="sm"
-            outline
-            class="q-ml-sm"
-            icon="mdi-content-copy"
-            color="primary"
-            @click="handleCopyPublicUrl"
-          />
           <q-space />
           <q-btn
-            v-if="$q.platform.is.desktop"
             label="Add New"
             color="primary"
-            icon="mdi-plus"
             dense
-            :to="{ name: 'form-product' }"
+            :to="{ name: 'productsForm' }"
           />
-        </template>
-        <template v-slot:body-cell-img_url="props">
-          <q-td :props="props">
-            <q-avatar v-if="props.row.img_url">
-              <img :src="props.row.img_url">
-            </q-avatar>
-            <q-avatar v-else color="grey" text-color="white" icon="mdi-image-off" />
-          </q-td>
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props" class="q-gutter-x-sm">
@@ -57,7 +27,7 @@
                 Edit
               </q-tooltip>
             </q-btn>
-            <q-btn icon="mdi-delete-outline" color="negative" dense size="sm" @click="handleRemoveProduct(props.row)">
+            <q-btn icon="mdi-delete-outline" color="negative" dense size="sm" @click="handleRemoveItem(props.row)">
               <q-tooltip>
                 Delete
               </q-tooltip>
@@ -66,28 +36,15 @@
         </template>
       </q-table>
     </div>
-    <q-page-sticky
-      position="bottom-right"
-      :offset="[18, 18]"
-    >
-      <q-btn
-        v-if="$q.platform.is.mobile"
-        fab
-        icon="mdi-plus"
-        color="primary"
-        :to="{ name: 'form-product' }"
-      />
-    </q-page-sticky>
   </q-page>
 </template>
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
-import useApi from 'src/composables/UseApi'
-import useAuthUser from 'src/composables/UseAuthUser'
 import useNotify from 'src/composables/UseNotify'
+import productsService from 'src/services/products'
 import { useRouter } from 'vue-router'
-import { useQuasar, openURL, copyToClipboard } from 'quasar'
+import { useQuasar} from 'quasar'
 import { columnsProduct } from './table'
 
 export default defineComponent({
@@ -96,66 +53,44 @@ export default defineComponent({
     const products = ref([])
     const loading = ref(true)
     const router = useRouter()
-    const table = 'product'
     const $q = useQuasar()
 
-    const { listPublic, remove } = useApi()
-    const { user } = useAuthUser()
+    const service = productsService()
     const { notifyError, notifySuccess } = useNotify()
 
-    const handleListProducts = async () => {
+    const handleList = async () => {
       try {
         loading.value = true
-        products.value = await listPublic(table, user.value.id)
+        products.value = await service.getAll()
         loading.value = false
       } catch (error) {
         notifyError(error.message)
       }
     }
 
-    const handleEdit = (category) => {
-      router.push({ name: 'form-product', params: { id: category.id } })
+    const handleEdit = (item) => {
+      router.push({ name: 'productsForm', params: { id: item.id } })
     }
 
-    const handleRemoveProduct = async (category) => {
+    const handleRemoveItem = async (item) => {
       try {
         $q.dialog({
           title: 'Confirm',
-          message: `Do you really delete ${category.name} ?`,
+          message: `Do you really delete ${item.name} ?`,
           cancel: true,
           persistent: true
         }).onOk(async () => {
-          await remove(table, category.id)
+          // await service.remove(item.id)
           notifySuccess('successfully deleted')
-          handleListProducts()
+          handleList()
         })
       } catch (error) {
         notifyError(error.message)
       }
     }
 
-    const handleGoToStore = () => {
-      const idUser = user.value.id
-      const link = router.resolve({ name: 'product-public', params: { id: idUser } })
-      // router.push({ name: 'product-public', params: { id: idUser } })
-      openURL(window.origin + link.href)
-    }
-
-    const handleCopyPublicUrl = () => {
-      const idUser = user.value.id
-      const link = router.resolve({ name: 'product-public', params: { id: idUser } })
-      const externalLink = window.origin + link.href
-      copyToClipboard(externalLink)
-        .then(() => {
-          notifySuccess('Successfully copied')
-        })
-        .catch(() => {
-          notifyError('Error copied link')
-        })
-    }
-
     onMounted(() => {
-      handleListProducts()
+      handleList()
     })
 
     return {
@@ -163,9 +98,7 @@ export default defineComponent({
       products,
       loading,
       handleEdit,
-      handleRemoveProduct,
-      handleGoToStore,
-      handleCopyPublicUrl
+      handleRemoveItem,
     }
   }
 })
